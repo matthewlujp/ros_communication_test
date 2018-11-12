@@ -4,7 +4,6 @@
 import sys
 import rospy
 from std_msgs.msg import String, Int32, Float32MultiArray, Bool
-from argparser import Argparse
 
 
 rospy.init_node('communication_test', anonymous=True)
@@ -13,7 +12,7 @@ rospy.init_node('communication_test', anonymous=True)
 
 
 def test_pub():
-    send_params = [0.1, 0.2, 0.3, 0.4] # float array
+    send_params = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6] # float array
     send_steps = 5030 # int
 
     def check_params(data):
@@ -33,12 +32,12 @@ def test_pub():
             print("topic start: received data in remote is wrong")
         
     # testing multiple publisher
-    pub1 = rospy.Publisher('parameters', Float32MultiArray)
-    pub2 = rospy.Publisher('start', Int32)
+    pub1 = rospy.Publisher('parameters', Float32MultiArray, queue_size=100)
+    pub2 = rospy.Publisher('start', Int32, queue_size=100)
 
     # receive echoback
-    rospy.Subscriber('parameters', Bool, check_params)
-    rospy.Subscriber('start', Bool, check_steps)
+    rospy.Subscriber('parameters_reply', Bool, check_params)
+    rospy.Subscriber('start_reply', Bool, check_steps)
     
     pub1.publish(Float32MultiArray(data=send_params))
     pub2.publish(Int32(data=send_steps))
@@ -62,7 +61,7 @@ def test_sub():
 
 
 if __name__ == '__main__':
-    if sys.args[1] == 'pub':
+    if len(sys.argv) == 1 or sys.argv[1] == 'pub':
         test_pub()
     else:
         test_sub()
