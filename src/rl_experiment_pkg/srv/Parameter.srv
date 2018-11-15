@@ -1,0 +1,6 @@
+float32[] weight_cos
+float32[] weight_sin
+float32[] bias_cos
+float32[] bias_sin
+---
+string error
